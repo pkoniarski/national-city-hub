@@ -36,7 +36,7 @@
     padding: 32px 20px 48px;
     position: relative;
   }
- 
+
   /* Header */
   .crest {
     text-align: center;
@@ -79,7 +79,7 @@
     background: var(--gold-light);
     transform: rotate(45deg);
   }
- 
+
   /* Greeting */
   .greet {
     text-align: center;
@@ -98,7 +98,7 @@
     margin-top: 4px;
     letter-spacing: 0.02em;
   }
- 
+
   /* Tiles */
   .tiles {
     display: grid;
@@ -161,11 +161,11 @@
     color: var(--slate);
     margin-top: 3px;
   }
- 
+
   .tile.score .icon { background: var(--forest); }
   .tile.grill .icon { background: var(--red); }
   .tile.cart  .icon { background: var(--gold); color: var(--forest-dark); }
- 
+
   /* Secondary links */
   .secondary {
     margin-top: 22px;
@@ -190,7 +190,7 @@
     text-align: center;
   }
   .sec-link:hover { background: rgba(212,184,120,0.1); }
- 
+
   /* Status bar */
   .status {
     margin: 22px 0 4px;
@@ -209,7 +209,7 @@
     margin-right: 6px;
     box-shadow: 0 0 6px rgba(91,185,116,0.6);
   }
- 
+
   /* Footer */
   footer {
     margin-top: 32px;
@@ -226,7 +226,7 @@
     color: var(--gold-light);
     margin-bottom: 4px;
   }
- 
+
   /* Modal */
   .modal {
     position: fixed;
@@ -336,22 +336,22 @@
 </head>
 <body>
 <div class="wrap">
- 
+
   <div class="crest">
     <div class="mono">Est. 1955 · Sweetwater Valley</div>
     <h1>National City<br>Golf Course</h1>
     <div class="rule"><span class="line"></span><span class="diamond"></span><span class="line"></span></div>
     <div class="sub">The Course Hub</div>
   </div>
- 
+
   <div class="greet">
     Good afternoon, Paul.
     <span class="big">Enjoy your round.</span>
   </div>
- 
+
   <div class="tiles">
- 
-    <a class="tile score" href="#score">
+
+    <a class="tile score" href="score.html" id="scoreTile">
       <div class="icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -365,7 +365,7 @@
         <div class="desc">Digital scorecard · GHIN posting · GPS yardages</div>
       </div>
     </a>
- 
+
     <a class="tile grill" href="#grill">
       <div class="icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -381,7 +381,7 @@
         <div class="desc">Menu · Pickup at the turn · Pay ahead</div>
       </div>
     </a>
- 
+
     <a class="tile cart" href="#cart" id="cartTile">
       <div class="icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -399,32 +399,32 @@
       </div>
     </a>
   </div>
- 
+
   <div class="status">
     <span><span class="dot"></span>BEV CART ON COURSE · HOLE 4</span>
     <span>PACE · ON TIME</span>
   </div>
- 
+
   <div class="secondary">
     <a class="sec-link" href="tel:+16194741400">☏ Pro Shop</a>
     <a class="sec-link" href="#rules">Local Rules</a>
     <a class="sec-link" href="#tees">Book a Tee Time</a>
     <a class="sec-link" href="#weather">Course Conditions</a>
   </div>
- 
+
   <footer>
     <div class="addr">1439 Sweetwater Road · National City, CA 91950</div>
     <a href="tel:+16194741400">(619) 474-1400</a> &nbsp;·&nbsp; <a href="https://americangolf.com">americangolf.com</a>
   </footer>
 </div>
- 
+
 <!-- Bev cart request modal -->
 <div class="modal" id="cartModal">
   <div class="modal-card">
     <div style="font-size: 11px; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase;">Request Beverage Cart</div>
     <h3>What can Lauren bring?</h3>
     <p>She'll meet your group at the hole you select.</p>
- 
+
     <div class="form-row">
       <label>Hole
         <select id="holeSel">
@@ -442,46 +442,48 @@
         </select>
       </label>
     </div>
- 
+
     <label style="display: block; text-align:left; font-size:11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate); margin-bottom: 4px;">What you'd like</label>
     <input type="text" placeholder="e.g. 4 Modelos, 1 water" style="width:100%;" id="orderTxt">
- 
+
     <button class="btn" onclick="sendCart()">Send Request</button>
     <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
   </div>
 </div>
- 
+
 <div class="toast" id="toast"></div>
- 
+
 <script>
   const cartTile = document.getElementById('cartTile');
   const modal = document.getElementById('cartModal');
   const toast = document.getElementById('toast');
- 
+
   cartTile.addEventListener('click', (e) => {
     e.preventDefault();
     modal.classList.add('open');
   });
- 
+
   function closeModal() {
     modal.classList.remove('open');
   }
- 
+
   function sendCart() {
     const hole = document.getElementById('holeSel').value;
     closeModal();
     showToast('Request sent · Lauren ETA ~4 min to Hole ' + hole);
   }
- 
+
   function showToast(msg) {
     toast.textContent = msg;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3500);
   }
- 
-  // Demo handlers for other tiles
+
+  // Demo handlers for tiles without a real destination yet (Grill).
+  // Score tile and Cart tile have their own behavior.
+  const REAL_TILES = ['cartTile', 'scoreTile'];
   document.querySelectorAll('.tile').forEach(t => {
-    if (t.id !== 'cartTile') {
+    if (!REAL_TILES.includes(t.id)) {
       t.addEventListener('click', (e) => {
         e.preventDefault();
         showToast('Demo · ' + t.querySelector('.title').textContent);

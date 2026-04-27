@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0F3D2E">
+<title>Score Your Round — National City Golf Course</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #0F3D2E;
+    --forest-dark: #082318;
+    --cream: #F7F1E1;
+    --cream-dark: #ECE3C8;
+    --cream-pale: #FAF6E8;
+    --gold: #B08D3C;
+    --gold-light: #D4B878;
+    --ink: #1C1C1C;
+    --slate: #5B5B5B;
+    --red: #8B2332;
+    --green-good: #2D7A4B;
+    --red-bad: #B33A3A;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--forest);
+    color: var(--cream);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Top bar */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(212,184,120,0.25);
+  }
+  .back {
+    color: var(--gold-light);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+  }
+  .back:hover { color: var(--cream); }
+  .topbar .brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    color: var(--cream);
+    letter-spacing: 0.04em;
+  }
+
+  /* Wrap */
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 18px 16px 60px;
+  }
+
+  /* Course header */
+  .crest {
+    text-align: center;
+    padding: 14px 0 18px;
+    border-bottom: 1px solid rgba(212,184,120,0.25);
+    margin-bottom: 22px;
+  }
+  .crest .mono {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--gold-light);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .crest h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 1.05;
+    margin: 0 0 4px;
+    color: var(--cream);
+    letter-spacing: 0.01em;
+  }
+  .rule {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0 4px;
+  }
+  .rule .line { flex: 0 0 60px; height: 1px; background: var(--gold-light); opacity: 0.7; }
+  .rule .diamond { width: 6px; height: 6px; background: var(--gold-light); transform: rotate(45deg); }
+  .crest .sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--gold-light);
+  }
+
+  /* Round meta */
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+  .meta label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--gold-light);
+    text-transform: uppercase;
+  }
+  .meta input, .meta select {
+    background: rgba(247,241,225,0.08);
+    border: 1px solid rgba(212,184,120,0.4);
+    color: var(--cream);
+    padding: 10px;
+    border-radius: 2px;
+    font-family: inherit;
+    font-size: 14px;
+  }
+  .meta input::placeholder { color: rgba(247,241,225,0.4); }
+
+  /* Scorecard table */
+  .card-frame {
+    background: var(--cream);
+    color: var(--ink);
+    border: 1px solid var(--gold);
+    border-radius: 4px;
+    padding: 4px;
+    overflow-x: auto;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+  }
+  table.score {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    min-width: 720px;
+  }
+  table.score th, table.score td {
+    border: 1px solid #C9B988;
+    text-align: center;
+    padding: 6px 4px;
+    vertical-align: middle;
+  }
+  table.score thead th {
+    background: var(--forest);
+    color: var(--cream);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  table.score thead th.label-col { text-align: left; padding-left: 12px; }
+  table.score .row-label {
+    text-align: left;
+    padding-left: 12px;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.04em;
+  }
+  table.score .row-tees-c .row-label { background: var(--forest-dark); color: var(--gold-light); }
+  table.score .row-tees-f .row-label { background: var(--red); color: var(--cream); }
+  table.score .row-par .row-label,
+  table.score .row-par td { background: var(--ink); color: var(--cream); }
+  table.score .row-hcp .row-label { background: var(--forest); color: var(--cream); }
+  table.score .row-hcp td { color: var(--slate); font-style: italic; }
+  table.score .row-player .row-label { background: var(--forest); color: var(--cream); font-style: italic; }
+  /* Inline editable name input inside the player row label */
+  td.name-cell {
+    padding: 0 !important;
+    background: var(--forest);
+    position: relative;
+  }
+  td.name-cell input.name-input {
+    width: 100%;
+    height: 100%;
+    min-height: 40px;
+    padding: 6px 12px;
+    background: transparent;
+    border: 0;
+    color: var(--cream);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: 0.04em;
+    text-align: left;
+    cursor: text;
+  }
+  td.name-cell input.name-input::placeholder {
+    color: rgba(247,241,225,0.55);
+    font-style: italic;
+  }
+  td.name-cell input.name-input:focus {
+    outline: 2px solid var(--gold-light);
+    outline-offset: -2px;
+    background: var(--forest-dark);
+    font-style: normal;
+  }
+  /* Subtle hint that the cell is tappable */
+  td.name-cell::after {
+    content: '✎';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    color: var(--gold-light);
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  td.name-cell:focus-within::after { opacity: 0; }
+  td.name-cell.has-name::after { opacity: 0; }
+  table.score .row-player:nth-of-type(odd) td.score-cell { background: white; }
+  table.score .row-player:nth-of-type(even) td.score-cell { background: var(--cream-pale); }
+  table.score td.out-col { background: var(--forest); color: var(--cream); font-weight: 600; }
+  table.score .row-par td.out-col { background: black; }
+
+  /* Score input cells */
+  td.score-cell {
+    padding: 0;
+  }
+  td.score-cell input {
+    width: 100%;
+    height: 100%;
+    min-height: 40px;
+    border: 0;
+    background: transparent;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    padding: 8px 4px;
+  }
+  td.score-cell input:focus {
+    outline: 2px solid var(--gold);
+    outline-offset: -2px;
+    background: rgba(212,184,120,0.15);
+  }
+  /* Hide arrows */
+  td.score-cell input::-webkit-outer-spin-button,
+  td.score-cell input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  td.score-cell input { -moz-appearance: textfield; }
+
+  /* Score color coding (filled in via JS) */
+  td.score-cell.eagle  { background: #d6c179 !important; }
+  td.score-cell.birdie { background: #b5d8b5 !important; }
+  td.score-cell.par-c  { /* par color = default */ }
+  td.score-cell.bogey  { background: #f0d8c8 !important; }
+  td.score-cell.double { background: #e8b9b3 !important; }
+
+  /* Total row */
+  table.score .row-total .row-label { background: var(--gold); color: var(--forest-dark); font-weight: 700; }
+  table.score .row-total td { background: var(--cream-dark); font-weight: 700; font-size: 16px; }
+  table.score .row-total td.out-col { background: var(--gold); color: var(--forest-dark); }
+  .vs-par {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--slate);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+  .vs-par.under { color: var(--green-good); }
+  .vs-par.over  { color: var(--red-bad); }
+
+  /* Action bar */
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+    justify-content: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--cream);
+    color: var(--forest);
+    border: 1px solid var(--gold);
+    padding: 13px 22px;
+    border-radius: 2px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn.primary { background: var(--gold); color: var(--forest-dark); }
+  .btn.ghost   { background: transparent; color: var(--cream); border-color: rgba(212,184,120,0.4); }
+  .btn svg { width: 16px; height: 16px; }
+
+  .pro-shop-note {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 12px;
+    color: rgba(247,241,225,0.6);
+    font-style: italic;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed; left: 50%; bottom: 30px;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--forest-dark); color: var(--gold-light);
+    border: 1px solid var(--gold); padding: 14px 20px;
+    border-radius: 4px; font-size: 13px; opacity: 0;
+    transition: all 0.3s ease; z-index: 200;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Mobile */
+  @media (max-width: 720px) {
+    .meta { grid-template-columns: 1fr 1fr; }
+    .meta .meta-course { grid-column: 1 / -1; }
+    .crest h1 { font-size: 24px; }
+    .card-frame { padding: 0; border-radius: 0; }
+    table.score { font-size: 13px; min-width: 640px; }
+    td.name-cell input.name-input { font-size: 15px; }
+  }
+
+  /* Print stylesheet — match the printed scorecard look */
+  @media print {
+    @page { size: 11in 6.5in landscape; margin: 0.25in; }
+    html, body { background: white !important; color: var(--ink); }
+    .topbar, .actions, .pro-shop-note, .toast, .back, .meta input, .meta select { /* hide screen-only chrome below */ }
+    .topbar, .actions, .pro-shop-note, .toast { display: none !important; }
+    .page { padding: 0; max-width: 100%; }
+    .crest { padding: 4px 0 8px; border-bottom: 1px solid var(--gold); margin-bottom: 8px; }
+    .crest h1 { color: var(--forest); font-size: 24px; }
+    .crest .mono { color: var(--gold); }
+    .crest .sub { color: var(--gold); }
+    .meta {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .meta label { color: var(--slate); }
+    .meta input, .meta select {
+      background: white !important;
+      color: var(--ink) !important;
+      border: 1px solid var(--gold) !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .card-frame { border: 1px solid var(--gold); padding: 0; box-shadow: none; }
+    table.score { font-size: 11px; min-width: 0; }
+    table.score th, table.score td { padding: 4px 2px; }
+    td.score-cell input { min-height: 26px; font-size: 13px; }
+    /* Inline name input: print cleanly without focus rings or pencil hint */
+    td.name-cell::after { display: none !important; }
+    td.name-cell input.name-input {
+      min-height: 26px;
+      padding: 4px 8px;
+      font-size: 13px;
+      color: var(--cream) !important;
+      font-style: normal;
+    }
+    td.name-cell input.name-input::placeholder { color: rgba(247,241,225,0.5); }
+    /* Force background colors to print */
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="index.html">‹ Back to Course Hub</a>
+  <div class="brand">National City GC</div>
+</div>
+
+<div class="page">
+
+  <div class="crest">
+    <div class="mono">Digital Scorecard</div>
+    <h1>National City Golf Course</h1>
+    <div class="rule"><span class="line"></span><span class="diamond"></span><span class="line"></span></div>
+    <div class="sub">9-Hole Round · Front Nine</div>
+  </div>
+
+  <!-- Round meta -->
+  <div class="meta">
+    <label class="meta-course">
+      Date
+      <input type="date" id="roundDate">
+    </label>
+    <label>
+      Tee Time
+      <input type="time" id="roundTime">
+    </label>
+    <label>
+      Weather
+      <select id="weather">
+        <option value="">—</option>
+        <option>Clear · Light Wind</option>
+        <option>Sunny · Calm</option>
+        <option>Overcast</option>
+        <option>Breezy</option>
+        <option>Marine Layer</option>
+      </select>
+    </label>
+  </div>
+
+  <!-- Scorecard -->
+  <div class="card-frame">
+    <table class="score" id="scoreTable">
+      <thead>
+        <tr>
+          <th class="label-col">Hole</th>
+          <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th>
+          <th>6</th><th>7</th><th>8</th><th>9</th>
+          <th>OUT</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-tees-c">
+          <td class="row-label">Championship</td>
+          <td>225</td><td>505</td><td>250</td><td>240</td><td>115</td>
+          <td>165</td><td>310</td><td>277</td><td>110</td>
+          <td class="out-col">2197</td>
+        </tr>
+        <tr class="row-tees-f">
+          <td class="row-label">Forward</td>
+          <td>215</td><td>485</td><td>200</td><td>205</td><td>85</td>
+          <td>135</td><td>227</td><td>245</td><td>80</td>
+          <td class="out-col">1877</td>
+        </tr>
+        <tr class="row-par">
+          <td class="row-label">Par</td>
+          <td>4</td><td>5</td><td>4</td><td>4</td><td>3</td>
+          <td>3</td><td>4</td><td>4</td><td>3</td>
+          <td class="out-col">34</td>
+        </tr>
+        <tr class="row-hcp">
+          <td class="row-label">Handicap</td>
+          <td>5</td><td>1</td><td>6</td><td>7</td><td>8</td>
+          <td>3</td><td>2</td><td>4</td><td>9</td>
+          <td>—</td>
+        </tr>
+
+        <!-- Player score rows generated by JS -->
+        <tr class="row-player" data-player="1">
+          <td class="row-label name-cell">
+            <input type="text" class="name-input" placeholder="Player 1" data-player="1" aria-label="Player 1 name">
+          </td>
+        </tr>
+        <tr class="row-player" data-player="2">
+          <td class="row-label name-cell">
+            <input type="text" class="name-input" placeholder="Player 2" data-player="2" aria-label="Player 2 name">
+          </td>
+        </tr>
+        <tr class="row-player" data-player="3">
+          <td class="row-label name-cell">
+            <input type="text" class="name-input" placeholder="Player 3" data-player="3" aria-label="Player 3 name">
+          </td>
+        </tr>
+        <tr class="row-player" data-player="4">
+          <td class="row-label name-cell">
+            <input type="text" class="name-input" placeholder="Player 4" data-player="4" aria-label="Player 4 name">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Action bar -->
+  <div class="actions">
+    <button class="btn primary" onclick="window.print()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 6 2 18 2 18 9"/>
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+        <rect x="6" y="14" width="12" height="8"/>
+      </svg>
+      Print / Save as PDF
+    </button>
+    <button class="btn" onclick="downloadImage()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      Download Image
+    </button>
+    <button class="btn ghost" onclick="emailScorecard()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/>
+        <polyline points="22,6 12,13 2,6"/>
+      </svg>
+      Email Card
+    </button>
+    <button class="btn ghost" onclick="resetCard()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"/>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+      </svg>
+      New Round
+    </button>
+  </div>
+
+  <div class="pro-shop-note">
+    Pro Shop printer ready · 1439 Sweetwater Road, National City, CA
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- html2canvas for image download -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+  // ---- Constants ----
+  const PAR = [4, 5, 4, 4, 3, 3, 4, 4, 3];
+  const PAR_OUT = PAR.reduce((a,b) => a+b, 0);
+
+  // ---- Build score input rows ----
+  function buildPlayerRow(playerNum) {
+    const tr = document.querySelector(`tr.row-player[data-player="${playerNum}"]`);
+    for (let h = 0; h < 9; h++) {
+      const td = document.createElement('td');
+      td.className = 'score-cell';
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.min = 1;
+      input.max = 12;
+      input.dataset.player = playerNum;
+      input.dataset.hole = h + 1;
+      input.addEventListener('input', () => onScoreInput(input));
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === 'Tab') return;
+        if (e.key === 'ArrowRight') focusNext(playerNum, h+1, 1);
+        if (e.key === 'ArrowLeft')  focusNext(playerNum, h+1, -1);
+      });
+      td.appendChild(input);
+      tr.appendChild(td);
+    }
+    // OUT cell (totals)
+    const outTd = document.createElement('td');
+    outTd.className = 'out-col';
+    outTd.id = `p${playerNum}out`;
+    outTd.textContent = '—';
+    tr.appendChild(outTd);
+  }
+
+  function focusNext(player, hole, dir) {
+    const target = document.querySelector(
+      `input[data-player="${player}"][data-hole="${hole + dir}"]`
+    );
+    if (target) target.focus();
+  }
+
+  function onScoreInput(input) {
+    const p = input.dataset.player;
+    const h = parseInt(input.dataset.hole, 10);
+    const score = parseInt(input.value, 10);
+    const par  = PAR[h - 1];
+    const cell = input.parentElement;
+    cell.classList.remove('eagle', 'birdie', 'par-c', 'bogey', 'double');
+    if (!isNaN(score)) {
+      const diff = score - par;
+      if (diff <= -2) cell.classList.add('eagle');
+      else if (diff === -1) cell.classList.add('birdie');
+      else if (diff === 0)  cell.classList.add('par-c');
+      else if (diff === 1)  cell.classList.add('bogey');
+      else                  cell.classList.add('double');
+    }
+    updateTotals(p);
+  }
+
+  function updateTotals(player) {
+    let total = 0, filled = 0;
+    for (let h = 1; h <= 9; h++) {
+      const v = parseInt(
+        document.querySelector(`input[data-player="${player}"][data-hole="${h}"]`).value, 10
+      );
+      if (!isNaN(v)) { total += v; filled++; }
+    }
+    const outCell = document.getElementById(`p${player}out`);
+    if (filled === 0) {
+      outCell.innerHTML = '—';
+    } else {
+      const partialPar = PAR.slice(0, filled).reduce((a,b) => a+b, 0);
+      const diff = total - partialPar;
+      let dStr = '';
+      if (filled > 0) {
+        if (diff === 0) dStr = ' E';
+        else if (diff > 0) dStr = ` +${diff}`;
+        else dStr = ` ${diff}`;
+      }
+      outCell.innerHTML = `${total}<span class="vs-par ${diff < 0 ? 'under' : diff > 0 ? 'over' : ''}">${dStr}</span>`;
+    }
+  }
+
+  // ---- Inline player name entry ----
+  // Click/tap to clear (selects all so typing replaces) and toggle the pencil hint.
+  document.querySelectorAll('input.name-input').forEach(inp => {
+    inp.addEventListener('focus', () => inp.select());
+    // On mobile, focus alone doesn't reliably select — defer the select.
+    inp.addEventListener('click', () => setTimeout(() => inp.select(), 0));
+    inp.addEventListener('input', () => {
+      inp.parentElement.classList.toggle('has-name', inp.value.trim().length > 0);
+    });
+  });
+
+  // ---- Default date ----
+  document.getElementById('roundDate').valueAsDate = new Date();
+
+  // ---- Build all rows ----
+  for (let p = 1; p <= 4; p++) buildPlayerRow(p);
+
+  // ---- Actions ----
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  function downloadImage() {
+    const target = document.querySelector('.card-frame');
+    showToast('Generating image…');
+    html2canvas(target, { backgroundColor: '#F7F1E1', scale: 2 }).then(canvas => {
+      const link = document.createElement('a');
+      const date = document.getElementById('roundDate').value || 'round';
+      link.download = `national-city-scorecard-${date}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast('Image downloaded');
+    }).catch(() => showToast('Could not generate image'));
+  }
+
+  function emailScorecard() {
+    const date = document.getElementById('roundDate').value || '';
+    const lines = ['National City Golf Course — 9-Hole Round', `Date: ${date}`, ''];
+    for (let p = 1; p <= 4; p++) {
+      const nameInput = document.querySelector(`input.name-input[data-player="${p}"]`);
+      const name = (nameInput?.value || '').trim();
+      if (!name) continue;
+      const scores = [];
+      let total = 0;
+      for (let h = 1; h <= 9; h++) {
+        const v = document.querySelector(`input[data-player="${p}"][data-hole="${h}"]`).value;
+        scores.push(v || '-');
+        if (!isNaN(parseInt(v, 10))) total += parseInt(v, 10);
+      }
+      lines.push(`${name}: ${scores.join(' | ')}  =  ${total}`);
+    }
+    const body = encodeURIComponent(lines.join('\n'));
+    const subject = encodeURIComponent(`Round at National City GC ${date}`);
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  }
+
+  function resetCard() {
+    if (!confirm('Clear all scores and names? Start a new round?')) return;
+    document.querySelectorAll('td.score-cell input').forEach(i => {
+      i.value = '';
+      i.parentElement.classList.remove('eagle','birdie','par-c','bogey','double');
+    });
+    document.querySelectorAll('input.name-input').forEach(i => {
+      i.value = '';
+      i.parentElement.classList.remove('has-name');
+    });
+    for (let p = 1; p <= 4; p++) {
+      document.getElementById(`p${p}out`).innerHTML = '—';
+    }
+    showToast('Card cleared');
+  }
+</script>
+</body>
+</html>
